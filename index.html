@@ -1,0 +1,1937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ABS-CBN Online Banking</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ─── CSS VARIABLES ─── */
+  :root {
+    --navy:      #0B1F4B;
+    --blue:      #1A5CDB;
+    --blue-lt:   #3B7EF8;
+    --teal:      #0FA888;
+    --green:     #12C08A;
+    --green-lt:  #E6FBF5;
+    --violet:    #7C55F3;
+    --violet-lt: #EDE8FE;
+    --white:     #FFFFFF;
+    --off-white: #F4F7FE;
+    --gray-100:  #EEF1F8;
+    --gray-200:  #D6DCF0;
+    --gray-400:  #8B94B8;
+    --gray-600:  #4B567A;
+    --gray-800:  #1E2749;
+    --danger:    #E53E6A;
+    --warning:   #F5A623;
+    --shadow-sm: 0 2px 8px rgba(11,31,75,0.08);
+    --shadow-md: 0 8px 28px rgba(11,31,75,0.12);
+    --shadow-lg: 0 20px 60px rgba(11,31,75,0.18);
+    --radius-sm: 8px;
+    --radius-md: 14px;
+    --radius-lg: 22px;
+    --radius-xl: 32px;
+    --font-body: 'DM Sans', sans-serif;
+    --font-display: 'Playfair Display', serif;
+    --transition: 0.25s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  /* ─── RESET ─── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; font-size: 16px; }
+  body {
+    font-family: var(--font-body);
+    background: var(--off-white);
+    color: var(--gray-800);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+  a { text-decoration: none; color: inherit; }
+  img { max-width: 100%; display: block; }
+  input, select, textarea, button { font-family: inherit; }
+  button { cursor: pointer; border: none; background: none; }
+
+  /* ─── PAGE SYSTEM ─── */
+  .page { display: none; min-height: 100vh; }
+  .page.active { display: block; }
+
+  /* ══════════════════════════════════════════
+     LOGIN PAGE
+  ══════════════════════════════════════════ */
+  #page-login {
+    display: none;
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--navy) 0%, #112266 40%, #1A3D9E 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  #page-login.active { display: flex; align-items: center; justify-content: center; padding: 24px; }
+
+  #page-login::before {
+    content: '';
+    position: absolute;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(18,192,138,0.18) 0%, transparent 70%);
+    top: -200px; right: -200px;
+    pointer-events: none;
+  }
+  #page-login::after {
+    content: '';
+    position: absolute;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(124,85,243,0.15) 0%, transparent 70%);
+    bottom: -150px; left: -100px;
+    pointer-events: none;
+  }
+
+  .login-card {
+    background: rgba(255,255,255,0.97);
+    border-radius: var(--radius-xl);
+    padding: 48px 40px 40px;
+    width: 100%;
+    max-width: 440px;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    z-index: 2;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  /* ─── LOGO AREA ─── */
+  .logo-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 32px;
+  }
+  .logo-badge {
+    width: 72px; height: 72px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, var(--blue) 0%, var(--teal) 100%);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 14px;
+    box-shadow: 0 8px 24px rgba(26,92,219,0.35);
+  }
+  .logo-badge svg { width: 38px; height: 38px; fill: white; }
+  .logo-wordmark { text-align: center; }
+  .logo-wordmark .brand { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; color: var(--navy); letter-spacing: -0.5px; }
+  .logo-wordmark .tagline { font-size: 0.75rem; color: var(--gray-400); font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 2px; }
+
+  /* ─── FORM ─── */
+  .section-title { font-size: 1.35rem; font-weight: 600; color: var(--gray-800); margin-bottom: 6px; }
+  .section-sub { font-size: 0.875rem; color: var(--gray-400); margin-bottom: 28px; }
+
+  .form-group { margin-bottom: 18px; }
+  .form-group label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--gray-600); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 7px; }
+  .input-wrap { position: relative; }
+  .input-wrap .icon {
+    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+    color: var(--gray-400); pointer-events: none;
+    display: flex; align-items: center;
+  }
+  .input-wrap input, .form-group select, .form-group textarea {
+    width: 100%;
+    padding: 13px 16px 13px 44px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+    color: var(--gray-800);
+    background: var(--white);
+    transition: border-color var(--transition), box-shadow var(--transition);
+    outline: none;
+  }
+  .form-group input:not(.has-icon),
+  .form-group select,
+  .form-group textarea { padding: 13px 16px; }
+  .input-wrap input:focus, .form-group select:focus, .form-group textarea:focus,
+  .form-group input:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(26,92,219,0.12);
+  }
+  .form-group textarea { resize: vertical; min-height: 80px; }
+  .form-group select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238B94B8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 40px; }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 14px 28px;
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem; font-weight: 600;
+    transition: all var(--transition);
+    cursor: pointer; border: none;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--blue) 0%, var(--blue-lt) 100%);
+    color: white;
+    box-shadow: 0 4px 16px rgba(26,92,219,0.35);
+    width: 100%;
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(26,92,219,0.45); }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-green {
+    background: linear-gradient(135deg, var(--teal) 0%, var(--green) 100%);
+    color: white;
+    box-shadow: 0 4px 16px rgba(15,168,136,0.35);
+    width: 100%;
+  }
+  .btn-green:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(15,168,136,0.45); }
+  .btn-outline {
+    background: transparent;
+    color: var(--blue);
+    border: 1.5px solid var(--blue);
+    padding: 12px 24px;
+  }
+  .btn-outline:hover { background: var(--blue); color: white; }
+  .btn-sm { padding: 9px 18px; font-size: 0.85rem; }
+  .btn-danger { background: var(--danger); color: white; box-shadow: 0 4px 16px rgba(229,62,106,0.3); }
+  .btn-violet { background: linear-gradient(135deg, var(--violet) 0%, #9B7FF6 100%); color: white; box-shadow: 0 4px 16px rgba(124,85,243,0.3); }
+
+  .login-footer { text-align: center; margin-top: 24px; font-size: 0.875rem; color: var(--gray-400); }
+  .login-footer a { color: var(--blue); font-weight: 600; }
+  .login-footer a:hover { text-decoration: underline; }
+
+  .divider { display: flex; align-items: center; gap: 12px; margin: 20px 0; }
+  .divider span { font-size: 0.8rem; color: var(--gray-400); white-space: nowrap; }
+  .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--gray-200); }
+
+  /* ══════════════════════════════════════════
+     REGISTER PAGE
+  ══════════════════════════════════════════ */
+  #page-register {
+    display: none;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0B2A50 0%, #0F3D6E 50%, #0B4D42 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  #page-register.active { display: flex; align-items: flex-start; justify-content: center; padding: 32px 24px; }
+  #page-register::before {
+    content: '';
+    position: absolute;
+    width: 500px; height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(18,192,138,0.15) 0%, transparent 70%);
+    top: -100px; left: -100px;
+    pointer-events: none;
+  }
+
+  .register-card {
+    background: var(--white);
+    border-radius: var(--radius-xl);
+    padding: 44px 40px 40px;
+    width: 100%;
+    max-width: 520px;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    z-index: 2;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .age-notice {
+    background: linear-gradient(135deg, var(--green-lt) 0%, rgba(15,168,136,0.08) 100%);
+    border: 1.5px solid rgba(18,192,138,0.35);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    font-size: 0.82rem;
+    color: var(--teal);
+    font-weight: 500;
+    margin-bottom: 24px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .age-notice svg { flex-shrink: 0; }
+
+  .file-upload-area {
+    border: 2px dashed var(--gray-200);
+    border-radius: var(--radius-md);
+    padding: 28px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all var(--transition);
+    position: relative;
+    background: var(--gray-100);
+  }
+  .file-upload-area:hover { border-color: var(--blue); background: rgba(26,92,219,0.04); }
+  .file-upload-area input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .file-upload-icon { width: 44px; height: 44px; background: var(--gray-200); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
+  .file-upload-text { font-size: 0.875rem; color: var(--gray-600); font-weight: 500; }
+  .file-upload-sub { font-size: 0.75rem; color: var(--gray-400); margin-top: 4px; }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  /* ══════════════════════════════════════════
+     DASHBOARD LAYOUT
+  ══════════════════════════════════════════ */
+  #page-dashboard { display: none; }
+  #page-dashboard.active { display: flex; min-height: 100vh; }
+
+  /* Sidebar */
+  .sidebar {
+    width: 260px;
+    background: linear-gradient(180deg, var(--navy) 0%, #0D2557 100%);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    z-index: 100;
+    transition: transform var(--transition);
+    overflow-y: auto;
+  }
+  .sidebar-logo {
+    padding: 28px 24px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .sidebar-logo .logo-row { display: flex; align-items: center; gap: 12px; }
+  .sidebar-logo .logo-icon {
+    width: 42px; height: 42px;
+    background: linear-gradient(135deg, var(--blue-lt) 0%, var(--teal) 100%);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .sidebar-logo .logo-icon svg { width: 22px; height: 22px; fill: white; }
+  .sidebar-logo .brand-name { font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; color: white; line-height: 1.2; }
+  .sidebar-logo .brand-sub { font-size: 0.68rem; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 1px; }
+
+  .sidebar-nav { flex: 1; padding: 16px 0; }
+  .nav-section-label {
+    padding: 12px 24px 6px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.3);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 11px 24px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: rgba(255,255,255,0.6);
+    border-radius: 0;
+    cursor: pointer;
+    transition: all var(--transition);
+    position: relative;
+    border: none; background: none; width: 100%; text-align: left;
+  }
+  .nav-item svg { width: 18px; height: 18px; flex-shrink: 0; opacity: 0.7; }
+  .nav-item:hover { color: white; background: rgba(255,255,255,0.06); }
+  .nav-item.active {
+    color: white;
+    background: linear-gradient(90deg, rgba(59,126,248,0.25) 0%, rgba(59,126,248,0.05) 100%);
+  }
+  .nav-item.active::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--blue-lt);
+    border-radius: 0 3px 3px 0;
+  }
+  .nav-item.active svg { opacity: 1; }
+
+  .sidebar-user {
+    padding: 16px 24px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .user-avatar {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--violet) 0%, var(--blue-lt) 100%);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 0.9rem; color: white;
+    flex-shrink: 0;
+  }
+  .user-info { flex: 1; min-width: 0; }
+  .user-name { font-size: 0.83rem; font-weight: 600; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .user-role { font-size: 0.7rem; color: rgba(255,255,255,0.4); }
+  .btn-logout { color: rgba(255,255,255,0.4); padding: 4px; transition: color var(--transition); }
+  .btn-logout:hover { color: var(--danger); }
+  .btn-logout svg { width: 16px; height: 16px; }
+
+  /* Main area */
+  .main-area {
+    margin-left: 260px;
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Topbar */
+  .topbar {
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-100);
+    padding: 0 32px;
+    height: 64px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 50;
+    box-shadow: var(--shadow-sm);
+  }
+  .topbar-left { display: flex; align-items: center; gap: 16px; }
+  .menu-toggle { display: none; padding: 8px; border-radius: 8px; color: var(--gray-600); transition: all var(--transition); }
+  .menu-toggle:hover { background: var(--gray-100); }
+  .menu-toggle svg { width: 20px; height: 20px; }
+  .page-title { font-size: 1.05rem; font-weight: 600; color: var(--gray-800); }
+
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+  .topbar-date { font-size: 0.8rem; color: var(--gray-400); }
+  .notif-btn { position: relative; padding: 8px; border-radius: 8px; color: var(--gray-600); transition: all var(--transition); }
+  .notif-btn:hover { background: var(--gray-100); color: var(--blue); }
+  .notif-btn svg { width: 20px; height: 20px; }
+  .notif-dot { position: absolute; top: 6px; right: 6px; width: 8px; height: 8px; background: var(--danger); border-radius: 50%; border: 2px solid white; }
+  .topbar-avatar { width: 34px; height: 34px; border-radius: 9px; background: linear-gradient(135deg, var(--violet) 0%, var(--blue-lt) 100%); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; color: white; cursor: pointer; }
+
+  /* Content */
+  .content { flex: 1; padding: 28px 32px; }
+
+  /* Section panels */
+  .section-panel { display: none; }
+  .section-panel.active { display: block; }
+
+  /* ─── OVERVIEW SECTION ─── */
+  .welcome-strip { margin-bottom: 28px; }
+  .welcome-strip h1 { font-family: var(--font-display); font-size: 1.7rem; font-weight: 700; color: var(--gray-800); }
+  .welcome-strip h1 span { color: var(--blue); }
+  .welcome-strip p { font-size: 0.9rem; color: var(--gray-400); margin-top: 4px; }
+
+  .cards-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-bottom: 28px; }
+
+  .balance-card {
+    background: linear-gradient(135deg, var(--blue) 0%, var(--blue-lt) 100%);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    grid-column: span 2;
+    box-shadow: 0 8px 32px rgba(26,92,219,0.3);
+  }
+  .balance-card::after {
+    content: '';
+    position: absolute;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.07);
+    right: -60px; top: -60px;
+  }
+  .balance-card .card-label { font-size: 0.75rem; opacity: 0.75; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .balance-card .card-amount { font-size: 2.2rem; font-weight: 700; letter-spacing: -1px; font-family: var(--font-display); margin-bottom: 16px; }
+  .balance-card .card-meta { display: flex; gap: 20px; font-size: 0.8rem; opacity: 0.75; }
+  .balance-card .card-meta span { display: flex; align-items: center; gap: 5px; }
+
+  .stat-card {
+    background: var(--white);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--gray-100);
+  }
+  .stat-card .stat-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 12px;
+  }
+  .stat-card .stat-icon svg { width: 20px; height: 20px; }
+  .stat-card .stat-label { font-size: 0.75rem; color: var(--gray-400); font-weight: 500; margin-bottom: 4px; }
+  .stat-card .stat-val { font-size: 1.35rem; font-weight: 700; color: var(--gray-800); font-family: var(--font-display); }
+  .stat-card .stat-change { font-size: 0.75rem; margin-top: 4px; display: flex; align-items: center; gap: 4px; }
+  .stat-change.up { color: var(--teal); }
+  .stat-change.down { color: var(--danger); }
+
+  .icon-blue { background: rgba(26,92,219,0.1); color: var(--blue); }
+  .icon-green { background: var(--green-lt); color: var(--teal); }
+  .icon-violet { background: var(--violet-lt); color: var(--violet); }
+  .icon-warn { background: rgba(245,166,35,0.12); color: var(--warning); }
+
+  /* Quick actions */
+  .quick-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 28px; }
+  .qa-btn {
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    padding: 18px 12px;
+    background: var(--white);
+    border-radius: var(--radius-md);
+    border: 1.5px solid var(--gray-100);
+    cursor: pointer;
+    transition: all var(--transition);
+    font-size: 0.8rem; font-weight: 500; color: var(--gray-600);
+    box-shadow: var(--shadow-sm);
+  }
+  .qa-btn:hover { border-color: var(--blue); color: var(--blue); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+  .qa-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .qa-icon svg { width: 22px; height: 22px; }
+
+  /* Two-col grid */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 28px; }
+  .three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-bottom: 28px; }
+
+  /* Card container */
+  .card {
+    background: var(--white);
+    border-radius: var(--radius-md);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--gray-100);
+  }
+  .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+  .card-title { font-size: 1rem; font-weight: 600; color: var(--gray-800); }
+  .card-action { font-size: 0.8rem; color: var(--blue); font-weight: 500; cursor: pointer; }
+  .card-action:hover { text-decoration: underline; }
+
+  /* Transaction list */
+  .tx-list { list-style: none; }
+  .tx-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--gray-100);
+  }
+  .tx-item:last-child { border-bottom: none; }
+  .tx-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .tx-icon svg { width: 18px; height: 18px; }
+  .tx-info { flex: 1; min-width: 0; }
+  .tx-name { font-size: 0.875rem; font-weight: 500; color: var(--gray-800); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tx-date { font-size: 0.75rem; color: var(--gray-400); }
+  .tx-amount { font-size: 0.95rem; font-weight: 600; white-space: nowrap; }
+  .tx-amount.credit { color: var(--teal); }
+  .tx-amount.debit { color: var(--danger); }
+
+  /* ─── TRANSFER SECTION ─── */
+  .transfer-layout { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 24px; }
+
+  .step-bar { display: flex; gap: 0; margin-bottom: 28px; counter-reset: step; }
+  .step {
+    flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px;
+    font-size: 0.75rem; font-weight: 500; color: var(--gray-400);
+    position: relative;
+  }
+  .step::before {
+    content: counter(step); counter-increment: step;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--gray-200);
+    color: var(--gray-400);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem; font-weight: 600;
+    z-index: 1;
+  }
+  .step::after {
+    content: '';
+    position: absolute;
+    top: 14px; left: calc(50% + 14px);
+    right: calc(-50% + 14px);
+    height: 2px;
+    background: var(--gray-200);
+  }
+  .step:last-child::after { display: none; }
+  .step.done::before { background: var(--teal); color: white; content: '✓'; }
+  .step.active::before { background: var(--blue); color: white; }
+  .step.active { color: var(--blue); }
+
+  .bank-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+  .bank-chip {
+    display: flex; align-items: center; justify-content: center;
+    padding: 10px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem; font-weight: 500; color: var(--gray-600);
+    cursor: pointer;
+    transition: all var(--transition);
+    background: var(--white);
+  }
+  .bank-chip:hover { border-color: var(--blue); color: var(--blue); }
+  .bank-chip.selected { border-color: var(--blue); background: rgba(26,92,219,0.06); color: var(--blue); }
+
+  /* Transfer summary */
+  .transfer-summary {
+    background: linear-gradient(135deg, var(--navy) 0%, #0D2557 100%);
+    border-radius: var(--radius-md);
+    padding: 24px;
+    color: white;
+    position: sticky;
+    top: 88px;
+  }
+  .summary-label { font-size: 0.75rem; opacity: 0.5; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .summary-value { font-size: 1rem; font-weight: 500; color: white; margin-bottom: 16px; }
+  .summary-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.07); }
+  .summary-row:last-of-type { border-bottom: none; }
+  .summary-row .label { font-size: 0.8rem; opacity: 0.6; }
+  .summary-row .val { font-size: 0.9rem; font-weight: 500; }
+  .summary-total { background: rgba(255,255,255,0.08); border-radius: var(--radius-sm); padding: 14px; margin-top: 16px; display: flex; justify-content: space-between; align-items: center; }
+  .summary-total .label { font-size: 0.85rem; opacity: 0.7; }
+  .summary-total .val { font-size: 1.35rem; font-weight: 700; font-family: var(--font-display); }
+
+  /* ─── SAVINGS SECTION ─── */
+  .savings-hero {
+    background: linear-gradient(135deg, #0A3A5C 0%, #0B5C4B 100%);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    color: white;
+    margin-bottom: 24px;
+    display: flex; gap: 32px; align-items: center;
+    overflow: hidden; position: relative;
+  }
+  .savings-hero::after {
+    content: '';
+    position: absolute;
+    right: -80px; top: -80px;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+  }
+  .savings-hero-info { flex: 1; }
+  .savings-hero-info h2 { font-family: var(--font-display); font-size: 1.5rem; margin-bottom: 8px; }
+  .savings-hero-info p { opacity: 0.7; font-size: 0.875rem; max-width: 320px; }
+  .savings-rate { text-align: center; background: rgba(255,255,255,0.1); border-radius: var(--radius-md); padding: 24px 32px; flex-shrink: 0; }
+  .savings-rate .rate-num { font-size: 3rem; font-weight: 700; font-family: var(--font-display); line-height: 1; }
+  .savings-rate .rate-label { font-size: 0.8rem; opacity: 0.6; margin-top: 4px; }
+
+  .savings-products { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+  .savings-product {
+    background: var(--white);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    box-shadow: var(--shadow-sm);
+    border: 1.5px solid var(--gray-100);
+    transition: all var(--transition);
+    cursor: pointer;
+  }
+  .savings-product:hover { border-color: var(--teal); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+  .savings-product .sp-icon {
+    width: 46px; height: 46px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 14px;
+  }
+  .savings-product .sp-icon svg { width: 24px; height: 24px; }
+  .savings-product h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 4px; }
+  .savings-product p { font-size: 0.8rem; color: var(--gray-400); }
+  .savings-product .sp-rate { font-size: 1.3rem; font-weight: 700; font-family: var(--font-display); color: var(--teal); margin-top: 12px; }
+
+  /* ─── LOAN SECTION ─── */
+  .loan-types { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 24px; }
+  .loan-type {
+    padding: 18px;
+    border-radius: var(--radius-md);
+    border: 1.5px solid var(--gray-200);
+    cursor: pointer;
+    transition: all var(--transition);
+    background: var(--white);
+  }
+  .loan-type:hover, .loan-type.selected { border-color: var(--blue); background: rgba(26,92,219,0.04); }
+  .loan-type .lt-icon { width: 36px; height: 36px; border-radius: 9px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+  .loan-type .lt-icon svg { width: 18px; height: 18px; }
+  .loan-type h4 { font-size: 0.875rem; font-weight: 600; margin-bottom: 3px; }
+  .loan-type p { font-size: 0.75rem; color: var(--gray-400); }
+
+  .loan-calc { background: var(--white); border-radius: var(--radius-md); padding: 24px; box-shadow: var(--shadow-sm); border: 1px solid var(--gray-100); margin-bottom: 24px; }
+  .range-wrap { margin-bottom: 16px; }
+  .range-row { display: flex; justify-content: space-between; margin-bottom: 6px; }
+  .range-label { font-size: 0.8rem; color: var(--gray-400); font-weight: 500; }
+  .range-val { font-size: 0.9rem; font-weight: 600; color: var(--gray-800); }
+  input[type="range"] {
+    -webkit-appearance: none;
+    width: 100%; height: 5px;
+    background: var(--gray-200);
+    border-radius: 3px;
+    outline: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px; height: 18px;
+    background: var(--blue);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(26,92,219,0.4);
+  }
+
+  .loan-result {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+    background: linear-gradient(135deg, var(--green-lt) 0%, rgba(15,168,136,0.06) 100%);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    margin-top: 16px;
+  }
+  .lr-item { text-align: center; }
+  .lr-label { font-size: 0.72rem; color: var(--gray-400); margin-bottom: 4px; }
+  .lr-val { font-size: 1.15rem; font-weight: 700; color: var(--teal); font-family: var(--font-display); }
+
+  /* ─── WITHDRAW SECTION ─── */
+  .withdraw-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .method-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .method-card {
+    padding: 16px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--transition);
+    text-align: center;
+    background: var(--white);
+  }
+  .method-card:hover, .method-card.selected { border-color: var(--blue); background: rgba(26,92,219,0.04); }
+  .method-card .mc-icon { font-size: 1.8rem; margin-bottom: 6px; }
+  .method-card .mc-name { font-size: 0.8rem; font-weight: 600; }
+  .method-card .mc-fee { font-size: 0.72rem; color: var(--gray-400); }
+
+  .amount-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+  .amount-chip {
+    padding: 7px 16px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 20px;
+    font-size: 0.82rem; font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition);
+    background: var(--white);
+  }
+  .amount-chip:hover, .amount-chip.selected { border-color: var(--blue); background: var(--blue); color: white; }
+
+  /* ─── CHECK BALANCE SECTION ─── */
+  .balance-big-card {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%);
+    border-radius: var(--radius-xl);
+    padding: 40px;
+    color: white;
+    text-align: center;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 12px 40px rgba(11,31,75,0.35);
+  }
+  .balance-big-card::before {
+    content: '';
+    position: absolute;
+    width: 350px; height: 350px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+    right: -100px; top: -100px;
+  }
+  .balance-big-card::after {
+    content: '';
+    position: absolute;
+    width: 250px; height: 250px;
+    border-radius: 50%;
+    background: rgba(18,192,138,0.08);
+    left: -80px; bottom: -80px;
+  }
+  .balance-big-card .bc-label { font-size: 0.85rem; opacity: 0.6; margin-bottom: 8px; position: relative; z-index: 1; }
+  .balance-big-card .bc-amount { font-size: 3.5rem; font-weight: 700; font-family: var(--font-display); margin-bottom: 4px; position: relative; z-index: 1; letter-spacing: -2px; }
+  .balance-big-card .bc-acct { font-size: 0.85rem; opacity: 0.5; position: relative; z-index: 1; }
+
+  .account-details-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+  .acct-detail-card {
+    background: var(--white);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    border: 1px solid var(--gray-100);
+    box-shadow: var(--shadow-sm);
+  }
+  .acct-detail-card .ad-label { font-size: 0.72rem; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .acct-detail-card .ad-val { font-size: 1.05rem; font-weight: 600; color: var(--gray-800); }
+  .acct-detail-card .ad-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
+
+  /* ─── TRANSACTION HISTORY ─── */
+  .filters-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+  .filter-chip {
+    padding: 7px 16px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 20px;
+    font-size: 0.8rem; font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition);
+    background: var(--white);
+  }
+  .filter-chip:hover { border-color: var(--blue); color: var(--blue); }
+  .filter-chip.active { background: var(--blue); border-color: var(--blue); color: white; }
+
+  .search-bar {
+    display: flex; gap: 10px; margin-bottom: 16px;
+  }
+  .search-input {
+    flex: 1;
+    display: flex; align-items: center; gap: 10px;
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+  }
+  .search-input svg { color: var(--gray-400); flex-shrink: 0; width: 16px; height: 16px; }
+  .search-input input { border: none; outline: none; font-size: 0.875rem; width: 100%; color: var(--gray-800); }
+
+  .tx-table { width: 100%; border-collapse: collapse; }
+  .tx-table thead tr { background: var(--gray-100); }
+  .tx-table th {
+    text-align: left;
+    padding: 12px 16px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--gray-400);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .tx-table td { padding: 14px 16px; font-size: 0.875rem; color: var(--gray-800); border-bottom: 1px solid var(--gray-100); }
+  .tx-table tr:last-child td { border-bottom: none; }
+  .tx-table tr:hover td { background: var(--gray-100); }
+  .status-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.72rem; font-weight: 600;
+  }
+  .badge-success { background: var(--green-lt); color: var(--teal); }
+  .badge-pending { background: rgba(245,166,35,0.12); color: var(--warning); }
+  .badge-failed { background: rgba(229,62,106,0.1); color: var(--danger); }
+
+  /* ─── PROFILE SECTION ─── */
+  .profile-hero {
+    background: linear-gradient(135deg, var(--navy) 0%, #1A2E6B 100%);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    display: flex; align-items: center; gap: 24px;
+    color: white;
+    margin-bottom: 24px;
+  }
+  .profile-avatar-big {
+    width: 88px; height: 88px;
+    border-radius: 22px;
+    background: linear-gradient(135deg, var(--violet) 0%, var(--blue-lt) 100%);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem; font-weight: 700; color: white;
+    flex-shrink: 0;
+    box-shadow: 0 8px 24px rgba(124,85,243,0.4);
+  }
+  .profile-hero-info h2 { font-family: var(--font-display); font-size: 1.6rem; font-weight: 700; margin-bottom: 4px; }
+  .profile-hero-info p { opacity: 0.6; font-size: 0.875rem; }
+  .profile-badges { display: flex; gap: 8px; margin-top: 12px; }
+  .profile-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem; font-weight: 500;
+    background: rgba(255,255,255,0.12);
+  }
+  .profile-badges .verified { background: rgba(18,192,138,0.2); color: #5DEBB8; }
+  .profile-badges .premium { background: rgba(245,166,35,0.2); color: #FFD077; }
+
+  .profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .profile-field { margin-bottom: 16px; }
+  .profile-field .pf-label { font-size: 0.72rem; color: var(--gray-400); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
+  .profile-field .pf-val { font-size: 0.95rem; color: var(--gray-800); font-weight: 500; }
+
+  .section-header { margin-bottom: 24px; }
+  .section-header h2 { font-size: 1.3rem; font-weight: 700; color: var(--gray-800); margin-bottom: 4px; }
+  .section-header p { font-size: 0.875rem; color: var(--gray-400); }
+
+  /* ─── SIDEBAR OVERLAY (mobile) ─── */
+  .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 99; }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 1100px) {
+    .cards-grid { grid-template-columns: 1fr 1fr; }
+    .balance-card { grid-column: span 2; }
+    .savings-products { grid-template-columns: 1fr 1fr; }
+    .loan-types { grid-template-columns: 1fr 1fr; }
+    .account-details-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  @media (max-width: 900px) {
+    .sidebar { transform: translateX(-100%); }
+    .sidebar.open { transform: translateX(0); }
+    .sidebar-overlay.open { display: block; }
+    .main-area { margin-left: 0; }
+    .menu-toggle { display: flex; }
+    .transfer-layout { grid-template-columns: 1fr; }
+    .two-col { grid-template-columns: 1fr; }
+    .withdraw-layout { grid-template-columns: 1fr; }
+    .profile-grid { grid-template-columns: 1fr; }
+    .quick-actions { grid-template-columns: repeat(4, 1fr); }
+    .three-col { grid-template-columns: 1fr; }
+    .topbar { padding: 0 20px; }
+    .content { padding: 20px; }
+  }
+
+  @media (max-width: 640px) {
+    .login-card, .register-card { padding: 32px 24px; }
+    .cards-grid { grid-template-columns: 1fr; }
+    .balance-card { grid-column: span 1; }
+    .quick-actions { grid-template-columns: repeat(2, 1fr); }
+    .savings-products { grid-template-columns: 1fr; }
+    .savings-hero { flex-direction: column; }
+    .loan-types { grid-template-columns: 1fr; }
+    .bank-list { grid-template-columns: repeat(2, 1fr); }
+    .method-grid { grid-template-columns: 1fr; }
+    .loan-result { grid-template-columns: 1fr; }
+    .filters-bar { gap: 6px; }
+    .tx-table th:nth-child(3), .tx-table td:nth-child(3) { display: none; }
+    .profile-hero { flex-direction: column; text-align: center; }
+    .profile-badges { justify-content: center; }
+    .account-details-grid { grid-template-columns: 1fr; }
+    .form-row { grid-template-columns: 1fr; }
+    .balance-big-card .bc-amount { font-size: 2.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════
+     LOGIN PAGE
+═══════════════════════════════════════ -->
+<div id="page-login" class="page active">
+  <div class="login-card">
+
+    <!-- LOGO SPACE -->
+    <div class="logo-area">
+      <div class="logo-badge">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+        </svg>
+      </div>
+      <div class="logo-wordmark">
+        <div class="brand">ABS-CBN Bank</div>
+        <div class="tagline">Online Banking Portal</div>
+      </div>
+    </div>
+
+    <div class="section-title">Welcome back</div>
+    <div class="section-sub">Sign in to your account to continue</div>
+
+    <div class="form-group">
+      <label>Email / Username</label>
+      <div class="input-wrap">
+        <span class="icon">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </span>
+        <input type="email" placeholder="you@example.com" class="has-icon">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Password</label>
+      <div class="input-wrap">
+        <span class="icon">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </span>
+        <input type="password" placeholder="Enter your password" class="has-icon">
+      </div>
+    </div>
+
+    <div style="display:flex; justify-content:flex-end; margin:-6px 0 20px;">
+      <a href="#" style="font-size:0.82rem; color:var(--blue); font-weight:500;">Forgot password?</a>
+    </div>
+
+    <button class="btn btn-primary" onclick="goTo('dashboard')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+      Sign In
+    </button>
+
+    <div class="divider"><span>or</span></div>
+
+    <div class="login-footer">
+      Don't have an account? <a href="#" onclick="goTo('register')">Create Account</a>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     REGISTER PAGE
+═══════════════════════════════════════ -->
+<div id="page-register" class="page">
+  <div class="register-card">
+
+    <!-- LOGO SPACE -->
+    <div class="logo-area">
+      <div class="logo-badge">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+        </svg>
+      </div>
+      <div class="logo-wordmark">
+        <div class="brand">ABS-CBN Bank</div>
+        <div class="tagline">Create New Account</div>
+      </div>
+    </div>
+
+    <div class="age-notice">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span>Only users <strong>18 years old and above</strong> are allowed to create an account.</span>
+    </div>
+
+    <div class="form-group">
+      <label>Full Name</label>
+      <div class="input-wrap">
+        <span class="icon">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </span>
+        <input type="text" placeholder="Juan dela Cruz" class="has-icon">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Email Address</label>
+        <div class="input-wrap">
+          <span class="icon">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </span>
+          <input type="email" placeholder="you@example.com" class="has-icon">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Birth Date</label>
+        <div class="input-wrap">
+          <span class="icon">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </span>
+          <!-- Changed type="number" to type="date" -->
+          <input type="date" id="birthdate" class="has-icon" onchange="validateAge()">
+        </div>
+        <small id="age-display" style="font-size: 0.75rem; color: var(--gray-400); margin-top: 4px; display: block;"></small>
+      </div>
+
+    <div class="form-group">
+      <label>Password</label>
+      <div class="input-wrap">
+        <span class="icon">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </span>
+        <input type="password" placeholder="Create a strong password" class="has-icon">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Upload Valid Government ID</label>
+      <div class="file-upload-area">
+        <input type="file" accept="image/*,.pdf">
+        <div class="file-upload-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8B94B8" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        </div>
+        <div class="file-upload-text">Click to upload or drag & drop</div>
+        <div class="file-upload-sub">JPEG, PNG, or PDF · Max 5MB</div>
+      </div>
+    </div>
+
+    <button class="btn btn-green" onclick="goTo('dashboard')" style="margin-top:4px;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+      Create My Account
+    </button>
+
+    <div class="login-footer" style="margin-top:20px;">
+      Already have an account? <a href="#" onclick="goTo('login')">Sign In</a>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     DASHBOARD PAGE
+═══════════════════════════════════════ -->
+<div id="page-dashboard" class="page">
+
+  <!-- Sidebar overlay (mobile) -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+
+    <!-- LOGO SPACE (sidebar) -->
+    <div class="sidebar-logo">
+      <div class="logo-row">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" fill="none" stroke="white" stroke-width="2"/>
+          </svg>
+        </div>
+        <div>
+          <div class="brand-name">ABS-CBN Bank</div>
+          <div class="brand-sub">Online Banking</div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Main</div>
+      <button class="nav-item active" onclick="showSection('overview', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Overview
+      </button>
+      <button class="nav-item" onclick="showSection('transfer', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        Transfer Money
+      </button>
+      <button class="nav-item" onclick="showSection('savings', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/><path d="M22 6l-3 3-3-3"/></svg>
+        Savings
+      </button>
+      <button class="nav-item" onclick="showSection('loan', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        Loan Application
+      </button>
+
+      <div class="nav-section-label" style="margin-top:8px;">Transactions</div>
+      <button class="nav-item" onclick="showSection('withdraw', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        Withdraw
+      </button>
+      <button class="nav-item" onclick="showSection('balance', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        Check Balance
+      </button>
+      <button class="nav-item" onclick="showSection('history', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        Transaction History
+      </button>
+
+      <div class="nav-section-label" style="margin-top:8px;">Account</div>
+      <button class="nav-item" onclick="showSection('profile', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        My Profile
+      </button>
+    </nav>
+
+    <div class="sidebar-user">
+      <div class="user-avatar">JD</div>
+      <div class="user-info">
+        <div class="user-name">Juan dela Cruz</div>
+        <div class="user-role">Premium Account</div>
+      </div>
+      <button class="btn-logout" onclick="goTo('login')" title="Logout">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main-area">
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" onclick="toggleSidebar()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <span class="page-title" id="pageTitle">Overview</span>
+      </div>
+      <div class="topbar-right">
+        <span class="topbar-date" id="topbarDate"></span>
+        <button class="notif-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="notif-dot"></span>
+        </button>
+        <div class="topbar-avatar">JD</div>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <main class="content">
+
+      <!-- ── OVERVIEW ── -->
+      <div id="section-overview" class="section-panel active">
+        <div class="welcome-strip">
+          <h1>Good morning, <span>Juan!</span> 👋</h1>
+          <p>Wednesday, May 7, 2026 · Here's your financial summary</p>
+        </div>
+
+        <div class="cards-grid">
+          <div class="balance-card">
+            <div class="card-label">Total Available Balance</div>
+            <div class="card-amount">₱ 248,750.00</div>
+            <div class="card-meta">
+              <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg> Acct: •••• 7842</span>
+              <span>Updated just now</span>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon icon-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+            <div class="stat-label">Monthly Income</div>
+            <div class="stat-val">₱ 52,000</div>
+            <div class="stat-change up">↑ 8.2% this month</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon icon-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg></div>
+            <div class="stat-label">Monthly Expenses</div>
+            <div class="stat-val">₱ 18,340</div>
+            <div class="stat-change down">↑ 3.1% vs last month</div>
+          </div>
+        </div>
+
+        <div class="quick-actions">
+          <button class="qa-btn" onclick="showSection('transfer', document.querySelector('[onclick*=transfer]'))">
+            <div class="qa-icon icon-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></div>
+            Transfer
+          </button>
+          <button class="qa-btn" onclick="showSection('withdraw', document.querySelector('[onclick*=withdraw]'))">
+            <div class="qa-icon icon-violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
+            Withdraw
+          </button>
+          <button class="qa-btn" onclick="showSection('loan', document.querySelector('[onclick*=loan]'))">
+            <div class="qa-icon icon-warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
+            Apply Loan
+          </button>
+          <button class="qa-btn" onclick="showSection('savings', document.querySelector('[onclick*=savings]'))">
+            <div class="qa-icon icon-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></div>
+            Savings
+          </button>
+        </div>
+
+        <div class="two-col">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Recent Transactions</div>
+              <span class="card-action" onclick="showSection('history', document.querySelector('[onclick*=history]'))">View all →</span>
+            </div>
+            <ul class="tx-list">
+              <li class="tx-item">
+                <div class="tx-icon icon-green"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg></div>
+                <div class="tx-info"><div class="tx-name">Salary Credit – ABSCBN Corp</div><div class="tx-date">May 5, 2026</div></div>
+                <div class="tx-amount credit">+₱52,000</div>
+              </li>
+              <li class="tx-item">
+                <div class="tx-icon icon-blue"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></div>
+                <div class="tx-info"><div class="tx-name">Transfer to Maria Santos</div><div class="tx-date">May 3, 2026</div></div>
+                <div class="tx-amount debit">-₱5,000</div>
+              </li>
+              <li class="tx-item">
+                <div class="tx-icon icon-warn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/></svg></div>
+                <div class="tx-info"><div class="tx-name">SM Online Shopping</div><div class="tx-date">May 2, 2026</div></div>
+                <div class="tx-amount debit">-₱3,250</div>
+              </li>
+              <li class="tx-item">
+                <div class="tx-icon icon-violet"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
+                <div class="tx-info"><div class="tx-name">Meralco Bill Payment</div><div class="tx-date">Apr 30, 2026</div></div>
+                <div class="tx-amount debit">-₱2,800</div>
+              </li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Savings Goals</div>
+              <span class="card-action">Manage →</span>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:16px;">
+              <div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                  <span style="font-size:0.85rem; font-weight:500;">Emergency Fund</span>
+                  <span style="font-size:0.85rem; font-weight:600; color:var(--teal);">₱80k / ₱100k</span>
+                </div>
+                <div style="height:7px; background:var(--gray-100); border-radius:10px; overflow:hidden;">
+                  <div style="height:100%; width:80%; background:linear-gradient(90deg,var(--teal),var(--green)); border-radius:10px;"></div>
+                </div>
+              </div>
+              <div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                  <span style="font-size:0.85rem; font-weight:500;">Vacation Fund</span>
+                  <span style="font-size:0.85rem; font-weight:600; color:var(--blue);">₱25k / ₱60k</span>
+                </div>
+                <div style="height:7px; background:var(--gray-100); border-radius:10px; overflow:hidden;">
+                  <div style="height:100%; width:42%; background:linear-gradient(90deg,var(--blue),var(--blue-lt)); border-radius:10px;"></div>
+                </div>
+              </div>
+              <div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                  <span style="font-size:0.85rem; font-weight:500;">New Laptop</span>
+                  <span style="font-size:0.85rem; font-weight:600; color:var(--violet);">₱15k / ₱50k</span>
+                </div>
+                <div style="height:7px; background:var(--gray-100); border-radius:10px; overflow:hidden;">
+                  <div style="height:100%; width:30%; background:linear-gradient(90deg,var(--violet),#9B7FF6); border-radius:10px;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── TRANSFER MONEY ── -->
+      <div id="section-transfer" class="section-panel">
+        <div class="section-header">
+          <h2>Transfer Money</h2>
+          <p>Send funds to any bank account quickly and securely</p>
+        </div>
+
+        <div class="step-bar">
+          <div class="step active">Recipient</div>
+          <div class="step">Amount</div>
+          <div class="step">Review</div>
+          <div class="step">Done</div>
+        </div>
+
+        <div class="transfer-layout">
+          <div>
+            <div class="card" style="margin-bottom:18px;">
+              <div class="card-header"><div class="card-title">Select Recipient Bank</div></div>
+              <div class="bank-list">
+                <div class="bank-chip selected">BDO</div>
+                <div class="bank-chip">BPI</div>
+                <div class="bank-chip">Metrobank</div>
+                <div class="bank-chip">UnionBank</div>
+                <div class="bank-chip">GCash</div>
+                <div class="bank-chip">Maya</div>
+              </div>
+              <div class="form-group">
+                <label>Account Number</label>
+                <input type="text" placeholder="Enter account number">
+              </div>
+              <div class="form-group">
+                <label>Account Name</label>
+                <input type="text" placeholder="Recipient full name">
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header"><div class="card-title">Transfer Details</div></div>
+              <div class="form-group">
+                <label>Amount (PHP)</label>
+                <input type="number" placeholder="₱ 0.00">
+              </div>
+              <div class="form-group">
+                <label>Transfer Type</label>
+                <select>
+                  <option>Instapay (Real-time)</option>
+                  <option>PESONet (Same day)</option>
+                  <option>Standard (1-3 days)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Remarks (Optional)</label>
+                <textarea placeholder="e.g. Rent payment for May"></textarea>
+              </div>
+              <button class="btn btn-primary">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                Proceed to Review
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <div class="transfer-summary">
+              <div class="summary-label">From Account</div>
+              <div class="summary-value">•••• •••• •••• 7842</div>
+              <div class="summary-row"><span class="label">Recipient Bank</span><span class="val">BDO</span></div>
+              <div class="summary-row"><span class="label">Account No.</span><span class="val">—</span></div>
+              <div class="summary-row"><span class="label">Account Name</span><span class="val">—</span></div>
+              <div class="summary-row"><span class="label">Transfer Type</span><span class="val">Instapay</span></div>
+              <div class="summary-row"><span class="label">Processing Fee</span><span class="val">₱ 15.00</span></div>
+              <div class="summary-total">
+                <span class="label">Total Debit</span>
+                <span class="val">₱ 15.00</span>
+              </div>
+              <div style="margin-top:16px; padding:12px; background:rgba(255,255,255,0.06); border-radius:8px; font-size:0.75rem; opacity:0.6; line-height:1.5;">
+                Transfers are processed in real-time via Instapay. Funds are usually available within minutes.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SAVINGS ── -->
+      <div id="section-savings" class="section-panel">
+        <div class="section-header">
+          <h2>Savings Overview</h2>
+          <p>Grow your wealth with our competitive savings products</p>
+        </div>
+
+        <div class="savings-hero">
+          <div class="savings-hero-info">
+            <h2>Your Money Works For You</h2>
+            <p>Earn competitive interest rates and achieve your financial goals faster with ABS-CBN Bank savings products.</p>
+            <button class="btn btn-green btn-sm" style="width:auto; margin-top:16px;">Open a New Savings Account</button>
+          </div>
+          <div class="savings-rate">
+            <div class="rate-num">4.5%</div>
+            <div class="rate-label">p.a. on Time Deposits</div>
+          </div>
+        </div>
+
+        <div class="savings-products">
+          <div class="savings-product">
+            <div class="sp-icon icon-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/></svg></div>
+            <h4>Regular Savings</h4>
+            <p>Everyday savings with easy access to funds</p>
+            <div class="sp-rate">2.0% p.a.</div>
+          </div>
+          <div class="savings-product">
+            <div class="sp-icon icon-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
+            <h4>Time Deposit</h4>
+            <p>Lock funds for higher guaranteed returns</p>
+            <div class="sp-rate">4.5% p.a.</div>
+          </div>
+          <div class="savings-product">
+            <div class="sp-icon icon-violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></div>
+            <h4>Goal Savings</h4>
+            <p>Save toward specific financial goals</p>
+            <div class="sp-rate">3.2% p.a.</div>
+          </div>
+        </div>
+
+        <div class="two-col">
+          <div class="card">
+            <div class="card-header"><div class="card-title">Active Savings Accounts</div></div>
+            <ul class="tx-list">
+              <li class="tx-item">
+                <div class="tx-icon icon-green"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10"/></svg></div>
+                <div class="tx-info"><div class="tx-name">Regular Savings – •••7842</div><div class="tx-date">Rate: 2.0% p.a.</div></div>
+                <div class="tx-amount credit">₱ 48,750</div>
+              </li>
+              <li class="tx-item">
+                <div class="tx-icon icon-blue"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
+                <div class="tx-info"><div class="tx-name">Time Deposit – 90 days</div><div class="tx-date">Matures: Jul 15, 2026</div></div>
+                <div class="tx-amount credit">₱ 100,000</div>
+              </li>
+              <li class="tx-item">
+                <div class="tx-icon icon-violet"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></div>
+                <div class="tx-info"><div class="tx-name">Goal Savings – Vacation</div><div class="tx-date">Target: ₱60,000</div></div>
+                <div class="tx-amount credit">₱ 25,000</div>
+              </li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">Open New Account</div></div>
+            <div class="form-group">
+              <label>Account Type</label>
+              <select>
+                <option>Regular Savings</option>
+                <option>Time Deposit</option>
+                <option>Goal Savings</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Initial Deposit (PHP)</label>
+              <input type="number" placeholder="₱ 500.00 minimum">
+            </div>
+            <div class="form-group">
+              <label>Goal Name (optional)</label>
+              <input type="text" placeholder="e.g. Emergency Fund">
+            </div>
+            <button class="btn btn-green">Open Account</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── LOAN APPLICATION ── -->
+      <div id="section-loan" class="section-panel">
+        <div class="section-header">
+          <h2>Loan Application</h2>
+          <p>Apply for a loan with competitive rates and flexible terms</p>
+        </div>
+
+        <div class="loan-types">
+          <div class="loan-type selected">
+            <div class="lt-icon icon-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>
+            <h4>Home Loan</h4>
+            <p>As low as 5.5% p.a.</p>
+          </div>
+          <div class="loan-type">
+            <div class="lt-icon icon-violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></div>
+            <h4>Personal Loan</h4>
+            <p>As low as 1.5% monthly</p>
+          </div>
+          <div class="loan-type">
+            <div class="lt-icon icon-warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div>
+            <h4>Auto Loan</h4>
+            <p>As low as 4.8% p.a.</p>
+          </div>
+          <div class="loan-type">
+            <div class="lt-icon icon-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.42 2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.83a16 16 0 0 0 6.19 6.19l.93-.93a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+            <h4>Business Loan</h4>
+            <p>As low as 6.0% p.a.</p>
+          </div>
+          <div class="loan-type">
+            <div class="lt-icon icon-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></div>
+            <h4>OFW Loan</h4>
+            <p>Special rates for OFWs</p>
+          </div>
+          <div class="loan-type">
+            <div class="lt-icon icon-violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
+            <h4>Salary Loan</h4>
+            <p>Quick access based on salary</p>
+          </div>
+        </div>
+
+        <div class="loan-calc">
+          <div class="card-header"><div class="card-title">Loan Calculator</div></div>
+          <div class="range-wrap">
+            <div class="range-row"><span class="range-label">Loan Amount</span><span class="range-val">₱ 500,000</span></div>
+            <input type="range" min="10000" max="5000000" value="500000">
+          </div>
+          <div class="range-wrap">
+            <div class="range-row"><span class="range-label">Loan Term</span><span class="range-val">24 months</span></div>
+            <input type="range" min="6" max="360" value="24">
+          </div>
+          <div class="loan-result">
+            <div class="lr-item"><div class="lr-label">Monthly Payment</div><div class="lr-val">₱ 22,916</div></div>
+            <div class="lr-item"><div class="lr-label">Total Interest</div><div class="lr-val">₱ 50,000</div></div>
+            <div class="lr-item"><div class="lr-label">Total Amount</div><div class="lr-val">₱ 550,000</div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-title">Application Form – Home Loan</div></div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Desired Loan Amount</label>
+              <input type="number" placeholder="₱ 0.00">
+            </div>
+            <div class="form-group">
+              <label>Loan Term (months)</label>
+              <select>
+                <option>12 months</option>
+                <option>24 months</option>
+                <option>36 months</option>
+                <option>60 months</option>
+                <option>120 months</option>
+                <option>240 months</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Employment Status</label>
+              <select>
+                <option>Employed (Regular)</option>
+                <option>Self-Employed</option>
+                <option>OFW</option>
+                <option>Business Owner</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Monthly Income</label>
+              <input type="number" placeholder="₱ 0.00">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Purpose of Loan</label>
+            <textarea placeholder="Briefly describe the purpose of your loan..."></textarea>
+          </div>
+          <div style="display:flex; gap:12px; flex-wrap:wrap;">
+            <button class="btn btn-primary" style="width:auto; flex:1; min-width:180px;">Submit Application</button>
+            <button class="btn btn-outline">Save as Draft</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── WITHDRAW ── -->
+      <div id="section-withdraw" class="section-panel">
+        <div class="section-header">
+          <h2>Withdraw Funds</h2>
+          <p>Withdraw from your account to your preferred channel</p>
+        </div>
+
+        <div class="withdraw-layout">
+          <div>
+            <div class="card" style="margin-bottom:18px;">
+              <div class="card-header"><div class="card-title">Withdrawal Method</div></div>
+              <div class="method-grid">
+                <div class="method-card selected">
+                  <div class="mc-icon">🏧</div>
+                  <div class="mc-name">ATM / Over the Counter</div>
+                  <div class="mc-fee">Free</div>
+                </div>
+                <div class="method-card">
+                  <div class="mc-icon">📱</div>
+                  <div class="mc-name">GCash / Maya</div>
+                  <div class="mc-fee">₱15 fee</div>
+                </div>
+                <div class="method-card">
+                  <div class="mc-icon">🏦</div>
+                  <div class="mc-name">Bank Transfer</div>
+                  <div class="mc-fee">₱25 fee</div>
+                </div>
+                <div class="method-card">
+                  <div class="mc-icon">💳</div>
+                  <div class="mc-name">Linked Account</div>
+                  <div class="mc-fee">Free</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header"><div class="card-title">Withdrawal Amount</div></div>
+              <div class="amount-chips">
+                <div class="amount-chip">₱500</div>
+                <div class="amount-chip selected">₱1,000</div>
+                <div class="amount-chip">₱2,000</div>
+                <div class="amount-chip">₱5,000</div>
+                <div class="amount-chip">₱10,000</div>
+                <div class="amount-chip">Custom</div>
+              </div>
+              <div class="form-group">
+                <label>Enter Amount (PHP)</label>
+                <input type="number" placeholder="₱ 1,000.00" value="1000">
+              </div>
+              <div class="form-group">
+                <label>From Account</label>
+                <select>
+                  <option>Regular Savings – •••7842 (₱48,750 available)</option>
+                  <option>Checking – •••3211 (₱200,000 available)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Security PIN</label>
+                <input type="password" placeholder="Enter 6-digit PIN" maxlength="6">
+              </div>
+              <button class="btn btn-primary">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+                Confirm Withdrawal
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <div class="card" style="margin-bottom:18px;">
+              <div class="card-header"><div class="card-title">Available Balance</div></div>
+              <div style="text-align:center; padding:20px 0;">
+                <div style="font-size:0.8rem; color:var(--gray-400); margin-bottom:8px;">Regular Savings</div>
+                <div style="font-size:2.5rem; font-weight:700; font-family:var(--font-display); color:var(--teal);">₱ 48,750.00</div>
+                <div style="font-size:0.75rem; color:var(--gray-400); margin-top:8px;">Daily ATM Limit: ₱ 50,000</div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header"><div class="card-title">Daily Limit Usage</div></div>
+              <div style="margin-bottom:12px;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                  <span style="font-size:0.8rem; color:var(--gray-400);">Used today</span>
+                  <span style="font-size:0.85rem; font-weight:600;">₱5,000 of ₱50,000</span>
+                </div>
+                <div style="height:8px; background:var(--gray-100); border-radius:10px;">
+                  <div style="height:100%; width:10%; background:linear-gradient(90deg,var(--blue),var(--blue-lt)); border-radius:10px;"></div>
+                </div>
+              </div>
+              <div style="padding:12px; background:var(--green-lt); border-radius:8px; font-size:0.8rem; color:var(--teal); line-height:1.5;">
+                ✓ Your withdrawal is within daily limits and will be processed immediately.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── CHECK BALANCE ── -->
+      <div id="section-balance" class="section-panel">
+        <div class="section-header">
+          <h2>Check Balance</h2>
+          <p>View your current balances across all accounts</p>
+        </div>
+
+        <div class="balance-big-card">
+          <div class="bc-label">Total Portfolio Value</div>
+          <div class="bc-amount">₱ 248,750.00</div>
+          <div class="bc-acct">As of May 7, 2026 · 09:15 AM</div>
+        </div>
+
+        <div class="account-details-grid">
+          <div class="acct-detail-card">
+            <div class="ad-icon icon-blue"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
+            <div class="ad-label">Checking Account</div>
+            <div class="ad-val">₱ 100,000.00</div>
+          </div>
+          <div class="acct-detail-card">
+            <div class="ad-icon icon-green"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10"/></svg></div>
+            <div class="ad-label">Regular Savings</div>
+            <div class="ad-val">₱ 48,750.00</div>
+          </div>
+          <div class="acct-detail-card">
+            <div class="ad-icon icon-violet"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></div>
+            <div class="ad-label">Goal Savings</div>
+            <div class="ad-val">₱ 25,000.00</div>
+          </div>
+          <div class="acct-detail-card">
+            <div class="ad-icon icon-blue"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
+            <div class="ad-label">Time Deposit</div>
+            <div class="ad-val">₱ 75,000.00</div>
+          </div>
+          <div class="acct-detail-card">
+            <div class="ad-icon icon-warn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+            <div class="ad-label">Outstanding Loans</div>
+            <div class="ad-val" style="color:var(--danger);">₱ 0.00</div>
+          </div>
+          <div class="acct-detail-card">
+            <div class="ad-icon icon-green"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg></div>
+            <div class="ad-label">Net Worth</div>
+            <div class="ad-val" style="color:var(--teal);">₱ 248,750.00</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Interest Earned This Month</div>
+          </div>
+          <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px;">
+            <div style="text-align:center; padding:16px; background:var(--green-lt); border-radius:var(--radius-md);">
+              <div style="font-size:0.75rem; color:var(--teal); margin-bottom:6px;">Regular Savings</div>
+              <div style="font-size:1.4rem; font-weight:700; font-family:var(--font-display); color:var(--teal);">₱ 81.25</div>
+            </div>
+            <div style="text-align:center; padding:16px; background:rgba(26,92,219,0.06); border-radius:var(--radius-md);">
+              <div style="font-size:0.75rem; color:var(--blue); margin-bottom:6px;">Time Deposit</div>
+              <div style="font-size:1.4rem; font-weight:700; font-family:var(--font-display); color:var(--blue);">₱ 281.25</div>
+            </div>
+            <div style="text-align:center; padding:16px; background:var(--violet-lt); border-radius:var(--radius-md);">
+              <div style="font-size:0.75rem; color:var(--violet); margin-bottom:6px;">Goal Savings</div>
+              <div style="font-size:1.4rem; font-weight:700; font-family:var(--font-display); color:var(--violet);">₱ 66.67</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── TRANSACTION HISTORY ── -->
+      <div id="section-history" class="section-panel">
+        <div class="section-header">
+          <h2>Transaction History</h2>
+          <p>Full record of your account activity</p>
+        </div>
+
+        <div class="filters-bar">
+          <div class="filter-chip active">All</div>
+          <div class="filter-chip">Credits</div>
+          <div class="filter-chip">Debits</div>
+          <div class="filter-chip">Transfers</div>
+          <div class="filter-chip">Bills</div>
+          <div class="filter-chip">This Month</div>
+          <div class="filter-chip">Last 3 Months</div>
+        </div>
+
+        <div class="search-bar">
+          <div class="search-input">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" placeholder="Search transactions...">
+          </div>
+          <button class="btn btn-outline" style="white-space:nowrap;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export CSV
+          </button>
+        </div>
+
+        <div class="card" style="overflow-x:auto;">
+          <table class="tx-table">
+            <thead>
+              <tr>
+                <th>Transaction</th>
+                <th>Date & Time</th>
+                <th>Reference No.</th>
+                <th>Amount</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><div style="font-weight:500;">Salary Credit – ABSCBN Corp</div><div style="font-size:0.75rem;color:var(--gray-400);">Regular Savings •••7842</div></td>
+                <td><div>May 5, 2026</div><div style="font-size:0.75rem;color:var(--gray-400);">08:00 AM</div></td>
+                <td style="color:var(--gray-400); font-size:0.8rem;">TXN-2026050001</td>
+                <td class="tx-amount credit">+₱52,000.00</td>
+                <td><span class="status-badge badge-success">● Completed</span></td>
+              </tr>
+              <tr>
+                <td><div style="font-weight:500;">Transfer to Maria Santos</div><div style="font-size:0.75rem;color:var(--gray-400);">Instapay · BDO •••4521</div></td>
+                <td><div>May 3, 2026</div><div style="font-size:0.75rem;color:var(--gray-400);">02:30 PM</div></td>
+                <td style="color:var(--gray-400); font-size:0.8rem;">TXN-2026050302</td>
+                <td class="tx-amount debit">-₱5,000.00</td>
+                <td><span class="status-badge badge-success">● Completed</span></td>
+              </tr>
+              <tr>
+                <td><div style="font-weight:500;">SM Online Shopping</div><div style="font-size:0.75rem;color:var(--gray-400);">Debit Card •••7842</div></td>
+                <td><div>May 2, 2026</div><div style="font-size:0.75rem;color:var(--gray-400);">11:15 AM</div></td>
+                <td style="color:var(--gray-400); font-size:0.8rem;">TXN-2026050203</td>
+                <td class="tx-amount debit">-₱3,250.00</td>
+                <td><span class="status-badge badge-success">● Completed</span></td>
+              </tr>
+              <tr>
+                <td><div style="font-weight:500;">Meralco Bill Payment</div><div style="font-size:0.75rem;color:var(--gray-400);">Bills Pay · Account 1234</div></td>
+                <td><div>Apr 30, 2026</div><div style="font-size:0.75rem;color:var(--gray-400);">09:45 AM</div></td>
+                <td style="color:var(--gray-400); font-size:0.8rem;">TXN-2026043004</td>
+                <td class="tx-amount debit">-₱2,800.00</td>
+                <td><span class="status-badge badge-success">● Completed</span></td>
+              </tr>
+              <tr>
+                <td><div style="font-weight:500;">ATM Withdrawal</div><div style="font-size:0.75rem;color:var(--gray-400);">ABSCBN ATM – Ortigas Branch</div></td>
+                <td><div>Apr 28, 2026</div><div style="font-size:0.75rem;color:var(--gray-400);">04:12 PM</div></td>
+                <td style="color:var(--gray-400); font-size:0.8rem;">TXN-2026042805</td>
+                <td class="tx-amount debit">-₱5,000.00</td>
+                <td><span class="status-badge badge-success">● Completed</span></td>
+              </tr>
+              <tr>
+                <td><div style="font-weight:500;">Freelance Payment – TechCorp</div><div style="font-size:0.75rem;color:var(--gray-400);">PESONet · Regular Savings</div></td>
+                <td><div>Apr 25, 2026</div><div style="font-size:0.75rem;color:var(--gray-400);">10:00 AM</div></td>
+                <td style="color:var(--gray-400); font-size:0.8rem;">TXN-2026042506</td>
+                <td class="tx-amount credit">+₱15,000.00</td>
+                <td><span class="status-badge badge-pending">● Pending</span></td>
+              </tr>
+              <tr>
+                <td><div style="font-weight:500;">Lazada Purchase</div><div style="font-size:0.75rem;color:var(--gray-400);">Online Debit · Order #LZD882</div></td>
+                <td><div>Apr 22, 2026</div><div style="font-size:0.75rem;color:var(--gray-400);">07:33 PM</div></td>
+                <td style="color:var(--gray-400); font-size:0.8rem;">TXN-2026042207</td>
+                <td class="tx-amount debit">-₱1,450.00</td>
+                <td><span class="status-badge badge-failed">● Failed</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── PROFILE ── -->
+      <div id="section-profile" class="section-panel">
+        <div class="section-header">
+          <h2>My Profile</h2>
+          <p>Manage your personal information and account settings</p>
+        </div>
+
+        <div class="profile-hero">
+          <div class="profile-avatar-big">JD</div>
+          <div class="profile-hero-info">
+            <h2>Juan dela Cruz</h2>
+            <p>Member since January 15, 2022 · Account No: 2024-7842-001</p>
+            <div class="profile-badges">
+              <span class="profile-badge verified">✓ ID Verified</span>
+              <span class="profile-badge premium">★ Premium Member</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-grid">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Personal Information</div>
+              <span class="card-action">Edit →</span>
+            </div>
+            <div class="profile-field"><div class="pf-label">Full Name</div><div class="pf-val">Juan dela Cruz</div></div>
+            <div class="profile-field"><div class="pf-label">Date of Birth</div><div class="pf-val">March 15, 1990 (Age 36)</div></div>
+            <div class="profile-field"><div class="pf-label">Email Address</div><div class="pf-val">juan.delacruz@email.com</div></div>
+            <div class="profile-field"><div class="pf-label">Mobile Number</div><div class="pf-val">+63 917 123 4567</div></div>
+            <div class="profile-field"><div class="pf-label">Address</div><div class="pf-val">123 Rizal St., Quezon City, Metro Manila 1100</div></div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Account Settings</div>
+              <span class="card-action">Edit →</span>
+            </div>
+            <div class="profile-field"><div class="pf-label">Account Type</div><div class="pf-val">Premium Savings</div></div>
+            <div class="profile-field"><div class="pf-label">Account Number</div><div class="pf-val">2024 - 7842 - 001</div></div>
+            <div class="profile-field"><div class="pf-label">Branch</div><div class="pf-val">ABS-CBN Ortigas Branch</div></div>
+            <div class="profile-field"><div class="pf-label">Daily Transfer Limit</div><div class="pf-val">₱ 500,000.00</div></div>
+            <div class="profile-field"><div class="pf-label">Two-Factor Auth</div><div class="pf-val" style="color:var(--teal);">✓ Enabled</div></div>
+
+            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:8px;">
+              <button class="btn btn-outline btn-sm">Change Password</button>
+              <button class="btn btn-violet btn-sm" style="width:auto;">Security Settings</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Update Profile</div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>First Name</label>
+              <input type="text" value="Juan">
+            </div>
+            <div class="form-group">
+              <label>Last Name</label>
+              <input type="text" value="dela Cruz">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Mobile Number</label>
+              <input type="tel" value="+63 917 123 4567">
+            </div>
+            <div class="form-group">
+              <label>Email Address</label>
+              <input type="email" value="juan.delacruz@email.com">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Home Address</label>
+            <textarea style="padding:13px 16px;">123 Rizal St., Quezon City, Metro Manila 1100</textarea>
+          </div>
+          <div style="display:flex; gap:12px; flex-wrap:wrap;">
+            <button class="btn btn-primary" style="width:auto; flex:1; min-width:180px;">Save Changes</button>
+            <button class="btn btn-danger btn-sm" onclick="goTo('login')" style="width:auto;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              Sign Out
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script>
+  // Page navigation
+  function goTo(page) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const target = document.getElementById('page-' + page);
+    if (target) target.classList.add('active');
+    window.scrollTo(0, 0);
+    closeSidebar();
+  }
+
+  // Dashboard section navigation
+  function showSection(sectionId, btn) {
+    document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
+    const section = document.getElementById('section-' + sectionId);
+    if (section) section.classList.add('active');
+
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+
+    const titles = {
+      overview: 'Overview',
+      transfer: 'Transfer Money',
+      savings: 'Savings',
+      loan: 'Loan Application',
+      withdraw: 'Withdraw',
+      balance: 'Check Balance',
+      history: 'Transaction History',
+      profile: 'My Profile'
+    };
+    const el = document.getElementById('pageTitle');
+    if (el) el.textContent = titles[sectionId] || sectionId;
+    closeSidebar();
+  }
+
+  // Sidebar toggle (mobile)
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebarOverlay').classList.toggle('open');
+  }
+  function closeSidebar() {
+    document.getElementById('sidebar')?.classList.remove('open');
+    document.getElementById('sidebarOverlay')?.classList.remove('open');
+  }
+
+  // Date display
+  const dateEl = document.getElementById('topbarDate');
+  if (dateEl) {
+    const now = new Date();
+    dateEl.textContent = now.toLocaleDateString('en-PH', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+  }
+
+  // Chip toggles
+  document.querySelectorAll('.bank-chip, .amount-chip, .filter-chip, .loan-type, .method-card').forEach(chip => {
+    chip.addEventListener('click', function() {
+      const group = this.parentElement.querySelectorAll('.bank-chip, .amount-chip, .filter-chip, .loan-type, .method-card');
+      group.forEach(c => c.classList.remove('selected', 'active'));
+      this.classList.add(this.classList.contains('filter-chip') ? 'active' : 'selected');
+    });
+  });
+</script>
+</body>
+</html>
